@@ -1,0 +1,15 @@
+torch
+scipy
+accelerate
+appdirs
+loralib
+bitsandbytes>=0.39.0
+black[jupyter]
+datasets
+fire
+tqdm
+sentencepiece
+text_generation
+guidance
+git+https://github.com/huggingface/peft.git
+transformers

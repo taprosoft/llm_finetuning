@@ -1,0 +1,4 @@
+alpaca_lora_4bit@git+https://github.com/taprosoft/alpaca_lora_4bit@winglian-setup_pip
+exllama_lib@git+https://github.com/taprosoft/exllama.git
+petf@git+https://github.com/huggingface/peft.git
+xformers
