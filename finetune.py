@@ -346,13 +346,16 @@ def train(
     if data_path.endswith(".json") or data_path.endswith(".jsonl"):
         data = load_dataset("json", data_files=data_path)
     else:
-        data = load_dataset(
-            "json",
-            data_files={
-                "train": data_path + "/train.json",
-                "test": data_path + "/test.json",
-            },
-        )
+        if os.path.exists(data_path):
+            data = load_dataset(
+                "json",
+                data_files={
+                    "train": data_path + "/train.json",
+                    "test": data_path + "/test.json",
+                },
+            )
+        else:
+            data = load_dataset(data_path)
 
     if val_set_size > 0:
         train_val = data["train"].train_test_split(
