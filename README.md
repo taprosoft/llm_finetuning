@@ -36,6 +36,10 @@ This repo is built upon these materials:
 
 ## Usage
 
+### Demo notebook
+
+See [notebook](llm_finetuning.ipynb) or on Colab [notebook](https://colab.research.google.com/github/taprosoft/llm_finetuning/blob/main/llm_finetuning.ipynb).
+
 ### Setup
 
 1. Install default dependencies
