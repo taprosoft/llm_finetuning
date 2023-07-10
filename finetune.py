@@ -199,7 +199,7 @@ def train(
             f"wandb_watch: {wandb_watch}\n"
             f"wandb_log_model: {wandb_log_model}\n"
             f"resume_from_checkpoint: {resume_from_checkpoint or False}\n"
-            f"prompt template: {prompt_template_name}\n"
+            f"prompt_template: {prompt_template_name}\n"
         )
     assert (
         base_model
@@ -380,6 +380,7 @@ def train(
         eval_dataset=val_data,
         args=transformers.TrainingArguments(
             per_device_train_batch_size=micro_batch_size,
+            per_device_eval_batch_size=micro_batch_size,
             gradient_accumulation_steps=gradient_accumulation_steps,
             warmup_steps=100,
             num_train_epochs=num_epochs,
