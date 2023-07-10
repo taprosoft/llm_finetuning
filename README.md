@@ -38,7 +38,7 @@ This repo is built upon these materials:
 
 ### Demo notebook
 
-See [notebook](llm_finetuning.ipynb) or on Colab [notebook](https://colab.research.google.com/github/taprosoft/llm_finetuning/blob/main/llm_finetuning.ipynb).
+See [notebook](llm_finetuning.ipynb) or on Colab [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/taprosoft/llm_finetuning/blob/main/llm_finetuning.ipynb).
 
 ### Setup
 
