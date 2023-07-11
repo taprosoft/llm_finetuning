@@ -115,7 +115,7 @@ def run_inference(
     overwrite_instruction: str = None,  # overwrite instruction in the
     # dataset with custom prompt
     prompt_template: str = "alpaca",  # prompt template for generation
-    selected_ids: List[str] = (),  # list of ids from the dataset to run
+    selected_ids: List[int] = (),  # list of ids from the dataset to run
     api_url: str = "http://127.0.0.1:8080",  # URL for remote API call
     guidance_template: str = "",  # guidance output template
     gptq_group_size: int = 128,  # gptq group size
@@ -124,7 +124,7 @@ def run_inference(
     if os.path.exists(data):
         dataset = load_dataset("json", data_files=data)["train"]
     else:
-        dataset = load_dataset(data)
+        dataset = load_dataset(data)["train"]
     model = None
 
     # setup inference instance
