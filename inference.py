@@ -3,7 +3,7 @@ import pickle
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
-from typing import Union
+from typing import List, Union
 
 import fire
 import torch
@@ -115,12 +115,16 @@ def run_inference(
     overwrite_instruction: str = None,  # overwrite instruction in the
     # dataset with custom prompt
     prompt_template: str = "alpaca",  # prompt template for generation
+    selected_ids: List[str] = (),  # list of ids from the dataset to run
     api_url: str = "http://127.0.0.1:8080",  # URL for remote API call
     guidance_template: str = "",  # guidance output template
     gptq_group_size: int = 128,  # gptq group size
 ):
     """Main inference entry point"""
-    dataset = load_dataset("json", data_files=data)["train"]
+    if os.path.exists(data):
+        dataset = load_dataset("json", data_files=data)["train"]
+    else:
+        dataset = load_dataset(data)
     model = None
 
     # setup inference instance
@@ -149,9 +153,6 @@ def run_inference(
 
         if model is not None:
             model.eval()
-
-    # to filter specific examples from dataset
-    selected_ids = []
 
     # Inference
     instructions, labels = [], []
