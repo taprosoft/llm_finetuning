@@ -1,0 +1,8 @@
+{
+    "description": "A chat prompt template",
+    "input": "conversations",
+    "user": "from",
+    "text": "value",
+    "prompt": "A conversation between a helpful AI model and the user",
+    "chat": "{user}: {text}\n"
+}
