@@ -13,7 +13,7 @@ from text_generation import Client
 from tqdm import tqdm
 from transformers import GenerationConfig, LlamaTokenizer
 
-from utils.prompter import Prompter, count_tokens
+from utils.prompter import AlpacaPrompter, count_tokens
 
 
 def load_model_hf(base, delta, lora_config, mode):
@@ -128,7 +128,7 @@ def run_inference(
     model = None
 
     # setup inference instance
-    prompter = Prompter(prompt_template)
+    prompter = AlpacaPrompter(prompt_template)
     client = Client(api_url)
     lora_config = LoraConfig.from_pretrained(delta) if delta else None
 
