@@ -6,7 +6,7 @@ data = {
     "max_new_tokens": 256,
 }
 
-r = requests.post("http://localhost:7862/generate", json=data, stream=True)
+r = requests.post("http://localhost:8080/generate", json=data, stream=True)
 
 if r.status_code == 200:
     for chunk in r.iter_content(chunk_size=4):

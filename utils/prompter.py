@@ -20,7 +20,10 @@ def get_guidance_format_from_fields(fields):
 
 
 def count_tokens(texts, tokenizer):
-    return sum(len(item) for item in tokenizer(texts, return_tensors="pt")["input_ids"])
+    return sum(
+        len(item)
+        for item in tokenizer(texts, padding=True, return_tensors="pt")["input_ids"]
+    )
 
 
 class PromptSelector(object):

@@ -89,7 +89,7 @@ To launcher the server, use this command:
 python fastapi_server.py -d <path_to_model> -l <path_to_optional_lora>
 ```
 
-Default endpoint is `localhost:7862`. Sample API request is provided in [fastapi_request.py](fastapi_request.py). Also a chat UI is provided when accessing the default URL on a browser (suitable for testing purpose).
+Default endpoint is `localhost:8080`. Sample API request is provided in [fastapi_request.py](fastapi_request.py). Also a chat UI is provided when accessing the default URL on a browser (suitable for testing purpose).
 
 ### VLLM
 

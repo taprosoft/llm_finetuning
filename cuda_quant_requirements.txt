@@ -2,3 +2,4 @@ alpaca_lora_4bit@git+https://github.com/taprosoft/alpaca_lora_4bit@winglian-setu
 exllama_lib@git+https://github.com/taprosoft/exllama.git
 peft@git+https://github.com/huggingface/peft.git
 xformers
+auto-gptq

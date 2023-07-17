@@ -299,5 +299,5 @@ if __name__ == "__main__":
     # -------
 
     # [start fastapi]:
-    _PORT = 7862
+    _PORT = 8080
     uvicorn.run(app, host="0.0.0.0", port=_PORT, limit_concurrency=4)

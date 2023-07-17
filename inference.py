@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import List, Union
 
 import fire
+import requests
 import torch
 from datasets import load_dataset
 from peft import LoraConfig, get_peft_model, set_peft_model_state_dict
@@ -101,6 +102,46 @@ def generate_api(
     return output
 
 
+def generate_api_exllama(
+    client,
+    prompt,
+    max_new_token=512,
+    temperature=0.7,
+    repetition_penalty=1.1,
+    trial=4,
+):
+    text = None
+    for _ in range(trial):
+        try:
+            text = ""
+            data = {
+                "message": prompt,
+                "max_new_tokens": max_new_token,
+                "temperature": temperature,
+                "token_repetition_penalty_max": repetition_penalty,
+            }
+            r = requests.post(client, json=data, stream=True)
+            if r.status_code == 200:
+                for chunk in r.iter_content(chunk_size=4):
+                    if chunk:
+                        try:
+                            chunk = chunk.decode("utf-8")
+                        except UnicodeDecodeError:
+                            chunk = "<?>"
+                        text += chunk
+            else:
+                raise IOError(
+                    "Request failed with status code: {}".format(r.status_code)
+                )
+            break
+        except IOError:
+            traceback.print_exc()
+            time.sleep(4)
+            continue
+    output = text if text is not None else "(error)"
+    return output
+
+
 # noinspection PyTypeChecker
 def run_inference(
     base: str,  # path to base model
@@ -129,7 +170,8 @@ def run_inference(
 
     # setup inference instance
     prompter = AlpacaPrompter(prompt_template)
-    client = Client(api_url)
+    # support 2 API server: TGI and exllama FastAPI
+    client = Client(api_url) if mode != "exllama" else (api_url + "/generate")
     lora_config = LoraConfig.from_pretrained(delta) if delta else None
 
     if base:
@@ -150,6 +192,16 @@ def run_inference(
                     load_lora=delta != "",
                     group_size=gptq_group_size,
                 )
+            elif mode == "autogptq":
+                from utils.loader.autogptq_loader import load_model_autogptq
+
+                model, tokenizer = load_model_autogptq(
+                    base,
+                    lora_path=delta,
+                    load_lora=delta != "",
+                )
+            else:
+                raise NotImplementedError(f"Mode '{mode}' is not supported.")
 
         if model is not None:
             model.eval()
@@ -176,16 +228,17 @@ def run_inference(
 
     if type == "api":
         # remote inference using text-generation-inference server
+        generate_func = generate_api if mode != "exllama" else generate_api_exllama
         if batch_size == "auto":
-            batch_size = 4
-        for _id in tqdm(range(0, len(instructions), batch_size * 2)):
+            batch_size = 4 if mode != "exllama" else 1
+        for _id in tqdm(range(0, len(instructions), batch_size)):
             futures = []
             pool = ThreadPoolExecutor(max_workers=batch_size)
 
             for instruction in instructions[_id : _id + batch_size]:
                 print(instruction)
                 response = pool.submit(
-                    generate_api,
+                    generate_func,
                     client,
                     instruction,
                     max_new_tokens,
@@ -243,6 +296,9 @@ def run_inference(
     elif type == "guidance":
         import guidance
 
+        assert isinstance(mode, int) or mode in [
+            "autogptq"
+        ], "Guidance mode only support `bitsandbytes` quantization or `autogptq` for now"
         model_guidance = guidance.llms.Transformers(model=model, tokenizer=tokenizer)
         guidance.llms.Transformers.cache.clear()
 

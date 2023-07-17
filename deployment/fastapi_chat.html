@@ -20,7 +20,7 @@
             // Check if the page was loaded from FastAPI or opened independently
             if (!window.location.href.startsWith("http://{{host}}:{{port}}/")) {
                 host = "localhost";
-                port = "7862";
+                port = "8080";
             }
 
             function processStream()
@@ -152,7 +152,7 @@
 
             <div>
                 <span class="edit_options md:float-left" style="display:none;">
-                    <b>[Max New Tokens]: </b><span id="tokens">200</span><br>
+                    <b>[Max New Tokens]: </b><span id="tokens">512</span><br>
                     <input id="max_tokens" type="range" min="100" max="1024" value="512">
                 </span>
 
