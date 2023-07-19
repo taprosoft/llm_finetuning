@@ -155,7 +155,7 @@ def run_inference(
     repetition_penalty: float = 1.1,  # generation repetition_penalty
     overwrite_instruction: str = None,  # overwrite instruction in the
     # dataset with custom prompt
-    prompt_template: str = "alpaca",  # prompt template for generation
+    prompt_template: str = "vicuna",  # prompt template for generation
     selected_ids: List[int] = (),  # list of ids from the dataset to run
     api_url: str = "http://127.0.0.1:8080",  # URL for remote API call
     guidance_template: str = "",  # guidance output template

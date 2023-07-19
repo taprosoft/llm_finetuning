@@ -58,6 +58,13 @@ parser.add_argument(
     type=str,
     help="Comma-separated list of VRAM (in GB) to use per GPU device for model layers, e.g. -gs 20,7,7",
 )
+parser.add_argument(
+    "-p",
+    "--port",
+    type=int,
+    help="Port to host the API sever",
+    default=8080,
+)
 # Do we want to bring over any more flags?
 
 args = parser.parse_args()
@@ -299,5 +306,5 @@ if __name__ == "__main__":
     # -------
 
     # [start fastapi]:
-    _PORT = 8080
+    _PORT = args.port
     uvicorn.run(app, host="0.0.0.0", port=_PORT, limit_concurrency=4)

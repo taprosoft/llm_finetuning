@@ -41,6 +41,16 @@ Legacy template used by the original alpaca repo, with no `\n` after the respons
 
 A trimmed down alpaca template which seems to perform just as well and spare some tokens. Models created with the default template seem to be queryable by the short tempalte as well. More experiments are welcome.
 
-### vigogne
+### sharegpt
 
-The default alpaca template, translated to french. This template was used to train the "Vigogne" LoRA and is to be used to query it, or for extra fine tuning.
+This template is used for the ShareGPT conversation dataset such as [ShareGPT_Vicuna_unfiltered](https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered). Basic structure is:
+
+```json
+{"conversations": [
+  {"from": "human", "value": "hi"},
+  {"from": "gpt", "value": "hi"},
+  {"from": "human", "value": "how are you"},
+  {"from": "gpt", "value": "good"}
+]}
+
+```

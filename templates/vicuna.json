@@ -1,0 +1,6 @@
+{
+    "description": "Template used by Vicuna",
+    "prompt_input": "You are a professional AI assistant. Answer truthfully.\n\nUSER:\n{instruction}\n\n### Input:\n{input}\n\nASSISTANT:\n",
+    "prompt_no_input": "You are a professional AI assistant. Answer truthfully.\n\nUSER:\n{instruction}\n\nASSISTANT:\n",
+    "response_split": "ASSISTANT:\n"
+}

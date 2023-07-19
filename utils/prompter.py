@@ -7,18 +7,6 @@ import os.path as osp
 from typing import Union
 
 
-def get_guidance_format_from_fields(fields):
-    format_str = "{"
-    for item in fields:
-        format_str += (
-            """"value_%s": "{{gen 'value_%s' temperature=0.0 max_tokens=60}}", """
-            % (item, item)
-        )
-    format_str = format_str[:-2] + "}"
-
-    return format_str
-
-
 def count_tokens(texts, tokenizer):
     return sum(
         len(item)
