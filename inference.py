@@ -152,6 +152,7 @@ def run_inference(
     type: str = "local",  # inference type, 'local', 'api' or 'guidance'
     max_new_tokens: int = 512,  # generation max number of new tokens
     temperature: float = 0.2,  # generation temperature
+    num_beams: int = 1,  # generation num beams
     repetition_penalty: float = 1.1,  # generation repetition_penalty
     overwrite_instruction: str = None,  # overwrite instruction in the
     # dataset with custom prompt
@@ -259,7 +260,7 @@ def run_inference(
         generation_config = GenerationConfig(
             temperature=temperature,
             repetition_penalty=repetition_penalty,
-            num_beams=1,
+            num_beams=num_beams,
         )
         if batch_size == "auto":
             batch_size = 1
@@ -334,14 +335,8 @@ def run_inference(
     for pred, input, label in zip(outputs, inputs, labels):
         print(pred)
         fo.write("Input: \n" + "-" * 80 + "\n" + input)
-        if "### Response:" not in pred:
-            fo.write("\n\nRaw: \n" + "-" * 80 + "\n" + pred)
-        else:
-            response = pred.split("### Response:")[1].strip()
-            if "Find" in response or response == "":
-                fo.write("\n\nRaw: \n" + "-" * 80 + "\n" + pred)
-            else:
-                fo.write("\n\nPred:\n" + "-" * 80 + "\n" + response)
+        response = prompter.get_response(pred)
+        fo.write("\n\nPred:\n" + "-" * 80 + "\n" + response)
         fo.write("\n\nLabel:\n" + "-" * 80 + "\n" + label)
         fo.write("\n\n\n" + "=" * 80 + "\n")
 
