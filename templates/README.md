@@ -54,3 +54,6 @@ This template is used for the ShareGPT conversation dataset such as [ShareGPT_Vi
 ]}
 
 ```
+
+### text
+Currently, we also support supplying raw text file as the training data. Simply add the path to the text file as the parameter of `--data_path`. Long text file will be splitted in smaller chunks to be used in the model.

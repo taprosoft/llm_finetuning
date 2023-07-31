@@ -77,6 +77,8 @@ You should also take a look at [templates](templates/README.md) to see different
 
 Prompt template can be switched as command line parameters at training and inference step.
 
+We also support for raw text file input and ShareGPT conversation style input. See [templates](templates/README.md).
+
 ### Training (`finetune.py`)
 
 This file contains a straightforward application of PEFT to the LLaMA model,
@@ -211,7 +213,7 @@ See [deployment](deployment/README.md).
 
 ### Quantization with GPTQ
 
-To convert normal HF checkpoint go GPTQ checkpoint we need a conversion script. See https://github.com/qwopqwop200/GPTQ-for-LLaMa for more information.
+To convert normal HF checkpoint go GPTQ checkpoint we need a conversion script. See [GPTQ-for-LLaMa](https://github.com/qwopqwop200/GPTQ-for-LLaMa) and [AutoGPTQ](https://github.com/PanQiWei/AutoGPTQ) for more information.
 
 ### Benchmarking
 
