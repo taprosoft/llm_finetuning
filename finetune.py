@@ -21,6 +21,7 @@ from transformers import (
 from transformers.trainer_utils import PREFIX_CHECKPOINT_DIR
 
 from utils.prompter import AlpacaPrompter, PromptSelector
+from utils.text import load_text_file
 
 
 class PeftTrainer(Trainer):
@@ -45,7 +46,6 @@ class PeftTrainer(Trainer):
                 or operator(metric_value, self.state.best_metric)
             ):
                 self.state.best_metric = metric_value
-
                 self.state.best_model_checkpoint = output_dir
 
         os.makedirs(output_dir, exist_ok=True)
@@ -159,7 +159,7 @@ def train(
     wandb_watch: str = "",  # options: false | gradients | all
     wandb_log_model: str = "",  # options: false | true
     resume_from_checkpoint: str = None,  # either training checkpoint or final adapter
-    prompt_template_name: str = "alpaca",  # The prompt template to use, will default to alpaca.
+    prompt_template: str = "vicuna",  # The prompt template to use, will default to alpaca.
     # memory optimization params
     mode: Union[int, str] = 8,  # training floating point mode
     gradient_checkpointing: bool = False,
@@ -199,14 +199,14 @@ def train(
             f"wandb_watch: {wandb_watch}\n"
             f"wandb_log_model: {wandb_log_model}\n"
             f"resume_from_checkpoint: {resume_from_checkpoint or False}\n"
-            f"prompt_template: {prompt_template_name}\n"
+            f"prompt_template: {prompt_template}\n"
         )
     assert (
         base_model
     ), "Please specify a --base_model, e.g. --base_model='huggyllama/llama-7b'"
     gradient_accumulation_steps = batch_size // micro_batch_size
 
-    prompter = PromptSelector.from_template_name(prompt_template_name, verbose=True)
+    prompter = PromptSelector.from_template_name(prompt_template, verbose=False)
 
     device_map = "auto"
     world_size = int(os.environ.get("WORLD_SIZE", 1))
@@ -340,29 +340,44 @@ def train(
         return tokenized_full_prompt
 
     # data preparation
-    if data_path.endswith(".json") or data_path.endswith(".jsonl"):
-        data = load_dataset("json", data_files=data_path)
-    else:
-        if os.path.exists(data_path):
-            data = load_dataset(
-                "json",
-                data_files={
-                    "train": data_path + "/train.json",
-                    "test": data_path + "/test.json",
-                },
-            )
-        else:
-            data = load_dataset(data_path)
-
-    if val_set_size > 0:
-        train_val = data["train"].train_test_split(
-            test_size=val_set_size, shuffle=True, seed=42
+    # check if using raw text format (prompter is None)
+    if prompter is None:
+        train_data = load_text_file(
+            data_path, tokenizer, cutoff_len=cutoff_len, overlap_len=cutoff_len // 2
         )
-        train_data = train_val["train"].shuffle().map(generate_and_tokenize_prompt)
-        val_data = train_val["test"].shuffle().map(generate_and_tokenize_prompt)
+
+        if val_set_size > 0:
+            train_val = train_data.train_test_split(
+                test_size=val_set_size, shuffle=True, seed=42
+            )
+            train_data = train_val["train"].shuffle()
+            val_data = train_val["test"]
+        else:
+            val_data = None
     else:
-        train_data = data["train"].shuffle().map(generate_and_tokenize_prompt)
-        val_data = data["test"].map(generate_and_tokenize_prompt)
+        if data_path.endswith(".json") or data_path.endswith(".jsonl"):
+            data = load_dataset("json", data_files=data_path)
+        else:
+            if os.path.exists(data_path):
+                data = load_dataset(
+                    "json",
+                    data_files={
+                        "train": data_path + "/train.json",
+                        "test": data_path + "/test.json",
+                    },
+                )
+            else:
+                data = load_dataset(data_path)
+
+        if val_set_size > 0:
+            train_val = data["train"].train_test_split(
+                test_size=val_set_size, shuffle=True, seed=42
+            )
+            train_data = train_val["train"].shuffle().map(generate_and_tokenize_prompt)
+            val_data = train_val["test"].shuffle().map(generate_and_tokenize_prompt)
+        else:
+            train_data = data["train"].shuffle().map(generate_and_tokenize_prompt)
+            val_data = data["test"].map(generate_and_tokenize_prompt)
 
     if not ddp and torch.cuda.device_count() > 1:
         # keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
