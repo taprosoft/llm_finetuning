@@ -19,6 +19,8 @@ class PromptSelector(object):
     def from_template_name(template_name: str = "", verbose: bool = False):
         if "sharegpt" in template_name:
             prompter = ChatPrompter(template_name, verbose)
+        elif template_name == "text":
+            prompter = None
         else:
             prompter = AlpacaPrompter(template_name, verbose)
 
@@ -65,7 +67,11 @@ class AlpacaPrompter(object):
         return res
 
     def get_response(self, output: str) -> str:
-        return output.split(self.template["response_split"])[1].strip()
+        try:
+            result = output.split(self.template["response_split"])[1].strip()
+        except (KeyError, IndexError):
+            result = output
+        return result
 
 
 class ChatPrompter(object):
