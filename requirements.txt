@@ -12,4 +12,4 @@ sentencepiece
 text_generation
 guidance
 git+https://github.com/huggingface/peft.git
-transformers
+transformers<4.34.0
