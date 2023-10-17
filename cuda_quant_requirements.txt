@@ -3,3 +3,4 @@ exllama_lib@git+https://github.com/taprosoft/exllama.git
 peft==0.4.0
 xformers
 auto-gptq
+torch<2.1.0
